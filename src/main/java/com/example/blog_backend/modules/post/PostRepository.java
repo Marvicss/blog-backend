@@ -1,6 +1,7 @@
 package com.example.blog_backend.modules.post;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import com.example.blog_backend.modules.post.enums.PostStatusEnum;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PostRepository extends JpaRepository<Post, UUID> {
 
-    Post findBySlug(String slug);
+    Optional<Post> findBySlug(String slug);
 
     List<Post> findByIdAndAuthorId(UUID id, UUID authorId);
 
@@ -26,5 +27,5 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
     @Modifying
     @Query("UPDATE Post p SET p.views = p.views + 1 WHERE p.id = :postId")
     void incrementViews(@Param("postId") UUID postId);
-    
+
 }

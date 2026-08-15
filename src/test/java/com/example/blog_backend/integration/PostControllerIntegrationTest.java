@@ -129,4 +129,49 @@ class PostControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(post)))
                 .andExpect(status().isCreated());
     }
+
+    @Test
+    void findBySlug_WithoutAuthentication_ShouldBeAllowed() throws Exception {
+        UUID postId = UUID.randomUUID();
+        User author = new User(UUID.randomUUID(), "Author", "author@test.com", UserEnum.AUTHOR, "password", new Date(), new Date());
+        Post post = new Post(postId, "Title", "Short Desc", "Content", author, Collections.singletonList("tag"), "Category", "slug", PostStatusEnum.PUBLISHED, BigInteger.ZERO, new Date(), new Date());
+        when(postService.findBySlug("slug")).thenReturn(post);
+
+        mockMvc.perform(get("/posts/slug/slug"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void findByIdAndAuthorId_WithoutAuthentication_ShouldBeAllowed() throws Exception {
+        UUID postId = UUID.randomUUID();
+        UUID authorId = UUID.randomUUID();
+        User author = new User(authorId, "Author", "author@test.com", UserEnum.AUTHOR, "password", new Date(), new Date());
+        Post post = new Post(postId, "Title", "Short Desc", "Content", author, Collections.singletonList("tag"), "Category", "slug", PostStatusEnum.PUBLISHED, BigInteger.ZERO, new Date(), new Date());
+        when(postService.findByIdAndAuthorId(postId, authorId)).thenReturn(Collections.singletonList(post));
+
+        mockMvc.perform(get("/posts/" + postId + "/author/" + authorId))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void findByStatus_WithoutAuthentication_ShouldBeAllowed() throws Exception {
+        UUID postId = UUID.randomUUID();
+        User author = new User(UUID.randomUUID(), "Author", "author@test.com", UserEnum.AUTHOR, "password", new Date(), new Date());
+        Post post = new Post(postId, "Title", "Short Desc", "Content", author, Collections.singletonList("tag"), "Category", "slug", PostStatusEnum.PUBLISHED, BigInteger.ZERO, new Date(), new Date());
+        when(postService.findByStatus(PostStatusEnum.PUBLISHED)).thenReturn(Collections.singletonList(post));
+
+        mockMvc.perform(get("/posts/status/PUBLISHED"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void findByStatusAndCategory_WithoutAuthentication_ShouldBeAllowed() throws Exception {
+        UUID postId = UUID.randomUUID();
+        User author = new User(UUID.randomUUID(), "Author", "author@test.com", UserEnum.AUTHOR, "password", new Date(), new Date());
+        Post post = new Post(postId, "Title", "Short Desc", "Content", author, Collections.singletonList("tag"), "Category", "slug", PostStatusEnum.PUBLISHED, BigInteger.ZERO, new Date(), new Date());
+        when(postService.findByStatusAndCategory(PostStatusEnum.PUBLISHED, "Category")).thenReturn(Collections.singletonList(post));
+
+        mockMvc.perform(get("/posts/status/PUBLISHED/category/Category"))
+                .andExpect(status().isOk());
+    }
 }

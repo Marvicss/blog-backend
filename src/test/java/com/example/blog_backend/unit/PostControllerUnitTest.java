@@ -90,4 +90,75 @@ class PostControllerUnitTest {
         assertEquals("Title", response.getBody().title());
         verify(postService, times(1)).findById(postId);
     }
+
+    @Test
+    void findBySlug_ShouldReturnPost() {
+        UUID authorId = UUID.randomUUID();
+        User author = new User(authorId, "Author Name", "author@test.com", UserEnum.AUTHOR, "password", new Date(), new Date());
+        UUID postId = UUID.randomUUID();
+        Post post = new Post(postId, "Title", "Short Desc", "Content", author, Collections.singletonList("tag"), "Category", "slug", PostStatusEnum.PUBLISHED, BigInteger.ZERO, new Date(), new Date());
+
+        when(postService.findBySlug("slug")).thenReturn(post);
+
+        ResponseEntity<PostResponseDTO> response = postController.findBySlug("slug");
+
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCode().value());
+        assertEquals("Title", response.getBody().title());
+        verify(postService, times(1)).findBySlug("slug");
+    }
+
+    @Test
+    void findByIdAndAuthorId_ShouldReturnPostList() {
+        UUID authorId = UUID.randomUUID();
+        User author = new User(authorId, "Author Name", "author@test.com", UserEnum.AUTHOR, "password", new Date(), new Date());
+        UUID postId = UUID.randomUUID();
+        Post post = new Post(postId, "Title", "Short Desc", "Content", author, Collections.singletonList("tag"), "Category", "slug", PostStatusEnum.PUBLISHED, BigInteger.ZERO, new Date(), new Date());
+
+        when(postService.findByIdAndAuthorId(postId, authorId)).thenReturn(Collections.singletonList(post));
+
+        ResponseEntity<List<PostResponseDTO>> response = postController.findByIdAndAuthorId(postId, authorId);
+
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCode().value());
+        assertEquals(1, response.getBody().size());
+        assertEquals("Title", response.getBody().get(0).title());
+        verify(postService, times(1)).findByIdAndAuthorId(postId, authorId);
+    }
+
+    @Test
+    void findByStatus_ShouldReturnPostList() {
+        UUID authorId = UUID.randomUUID();
+        User author = new User(authorId, "Author Name", "author@test.com", UserEnum.AUTHOR, "password", new Date(), new Date());
+        UUID postId = UUID.randomUUID();
+        Post post = new Post(postId, "Title", "Short Desc", "Content", author, Collections.singletonList("tag"), "Category", "slug", PostStatusEnum.PUBLISHED, BigInteger.ZERO, new Date(), new Date());
+
+        when(postService.findByStatus(PostStatusEnum.PUBLISHED)).thenReturn(Collections.singletonList(post));
+
+        ResponseEntity<List<PostResponseDTO>> response = postController.findByStatus(PostStatusEnum.PUBLISHED);
+
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCode().value());
+        assertEquals(1, response.getBody().size());
+        assertEquals("Title", response.getBody().get(0).title());
+        verify(postService, times(1)).findByStatus(PostStatusEnum.PUBLISHED);
+    }
+
+    @Test
+    void findByStatusAndCategory_ShouldReturnPostList() {
+        UUID authorId = UUID.randomUUID();
+        User author = new User(authorId, "Author Name", "author@test.com", UserEnum.AUTHOR, "password", new Date(), new Date());
+        UUID postId = UUID.randomUUID();
+        Post post = new Post(postId, "Title", "Short Desc", "Content", author, Collections.singletonList("tag"), "Category", "slug", PostStatusEnum.PUBLISHED, BigInteger.ZERO, new Date(), new Date());
+
+        when(postService.findByStatusAndCategory(PostStatusEnum.PUBLISHED, "Category")).thenReturn(Collections.singletonList(post));
+
+        ResponseEntity<List<PostResponseDTO>> response = postController.findByStatusAndCategory(PostStatusEnum.PUBLISHED, "Category");
+
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCode().value());
+        assertEquals(1, response.getBody().size());
+        assertEquals("Title", response.getBody().get(0).title());
+        verify(postService, times(1)).findByStatusAndCategory(PostStatusEnum.PUBLISHED, "Category");
+    }
 }

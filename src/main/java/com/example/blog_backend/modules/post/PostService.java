@@ -1,9 +1,12 @@
 package com.example.blog_backend.modules.post;
 
+import com.example.blog_backend.errors.PostNotFoundError;
+import com.example.blog_backend.modules.post.enums.PostStatusEnum;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -72,6 +75,46 @@ public class PostService {
 
     public Post create(Post post){
         return postRepository.save(post);
+    }
+
+    public Post findBySlug(String slug){
+        Optional<Post> post =  postRepository.findBySlug(slug);
+
+        if(post.isEmpty()){
+            throw  new PostNotFoundError();
+        }
+
+        return post.get();
+    }
+
+    public List<Post> findByIdAndAuthorId(UUID id, UUID authorId){
+        List<Post> posts = postRepository.findByIdAndAuthorId(id, authorId);
+
+        if(posts.isEmpty()){
+            throw new PostNotFoundError();
+        }
+
+        return posts;
+    }
+
+    public List<Post> findByStatus(PostStatusEnum status){
+        List<Post> posts = postRepository.findByStatus(status);
+
+        if(posts.isEmpty()){
+            throw  new PostNotFoundError();
+        }
+
+        return posts;
+    }
+
+    public List<Post> findByStatusAndCategory(PostStatusEnum status, String category){
+        List<Post> posts = postRepository.findByStatusAndCategory(status, category);
+
+        if(posts.isEmpty()){
+            throw new PostNotFoundError();
+        }
+
+        return posts;
     }
 
 

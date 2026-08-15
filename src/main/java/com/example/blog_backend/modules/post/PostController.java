@@ -1,6 +1,7 @@
 package com.example.blog_backend.modules.post;
 
 import com.example.blog_backend.modules.post.dto.PostResponseDTO;
+import com.example.blog_backend.modules.post.enums.PostStatusEnum;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,5 +46,41 @@ public class PostController {
         PostResponseDTO postResponse = mapPostToPostResponseDTO(post);
 
         return ResponseEntity.ok(postResponse);
+    }
+
+    @GetMapping("/slug/{slug}")
+    public ResponseEntity<PostResponseDTO> findBySlug(@PathVariable String slug){
+        Post post = postService.findBySlug(slug);
+
+        PostResponseDTO postResponse = mapPostToPostResponseDTO(post);
+
+        return ResponseEntity.ok(postResponse);
+    }
+
+    @GetMapping("/{id}/author/{authorId}")
+    public ResponseEntity<List<PostResponseDTO>> findByIdAndAuthorId(@PathVariable UUID id, @PathVariable UUID authorId){
+        List<Post> posts = postService.findByIdAndAuthorId(id, authorId);
+
+        List<PostResponseDTO> postsResponse = mapPostListToPostResponseDTO(posts);
+
+        return ResponseEntity.ok(postsResponse);
+    }
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<PostResponseDTO>> findByStatus(@PathVariable PostStatusEnum status){
+        List<Post> posts = postService.findByStatus(status);
+
+        List<PostResponseDTO> postsResponse = mapPostListToPostResponseDTO(posts);
+
+        return ResponseEntity.ok(postsResponse);
+    }
+
+    @GetMapping("/status/{status}/category/{category}")
+    public ResponseEntity<List<PostResponseDTO>> findByStatusAndCategory(@PathVariable PostStatusEnum status, @PathVariable String category){
+        List<Post> posts = postService.findByStatusAndCategory(status, category);
+
+        List<PostResponseDTO> postsResponse = mapPostListToPostResponseDTO(posts);
+
+        return ResponseEntity.ok(postsResponse);
     }
 }
